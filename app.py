@@ -1,28 +1,31 @@
 #!/usr/bin/env python3
-import os
+from aws_cdk import App, Environment
+from stacks.front_stack import FrontStack
+from stacks.image_processing_stack import ImageProcessingStack
+from stacks.api_gateway_stack import ApiGatewayStack
+from config import Config
 
-import aws_cdk as cdk
+app = App()
 
-from cloufront.cloufront_stack import CloufrontStack
+# Créer la stack de traitement d'images
+image_processing_stack = ImageProcessingStack(
+    app, "ImageProcessingStack",
+    env=Environment(**Config.get_env())
+)
 
+# Créer la stack API Gateway
+api_gateway_stack = ApiGatewayStack(
+    app, "ApiGatewayStack",
+    image_processor_lambda=image_processing_stack.image_processor,
+    env=Environment(**Config.get_env())
+)
 
-app = cdk.App()
-CloufrontStack(app, "CloufrontStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
-
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
-
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
-
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# Créer la stack frontend
+front_stack = FrontStack(
+    app, "FrontStack",
+    description="Deploy a React website to AWS CloudFront",
+    api_url=api_gateway_stack.api_url,
+    env=Environment(**Config.get_env())
+)
 
 app.synth()

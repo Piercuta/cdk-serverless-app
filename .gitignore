@@ -8,3 +8,16 @@ __pycache__
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
