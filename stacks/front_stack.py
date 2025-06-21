@@ -163,15 +163,12 @@ class FrontStack(Stack):
 
         # Source stage
         source_output = codepipeline.Artifact()
-        source_action = codepipeline_actions.GitHubSourceAction(
+        source_action = codepipeline_actions.CodeStarConnectionsSourceAction(
             action_name="GitHub_Source",
             owner=Config.get_github_owner(),
             repo=Config.get_github_repo(),
             branch=Config.get_github_branch(),
-            oauth_token=SecretValue.secrets_manager(
-                Config.get_github_secret_name(),
-                json_field=Config.get_github_secret_json_field()
-            ),
+            connection_arn='arn:aws:codeconnections:eu-west-1:532673134317:connection/2a30a395-8d38-43ab-827b-f39a83c9986a',
             output=source_output,
         )
 
